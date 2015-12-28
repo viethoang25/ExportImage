@@ -8,6 +8,7 @@ import java.io.IOException;
 /**
  * Created by VietHoang on 20/12/2015.
  */
+
 public class RootImage {
     private static final String ROOT_IMAGE_FOLDER = "./image/";
     private static final String SUB_IMAGE_FOLDER = "./subImage/";
