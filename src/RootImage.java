@@ -89,4 +89,23 @@ public class RootImage {
         }
         return number;
     }
+
+    public Image resizeImage(int width, int height) {
+        int original_width = image.getWidth();
+        int original_height = image.getHeight();
+        int new_width = original_width;
+        int new_height = original_height;
+
+        if (original_width > width) {
+            new_width = width;
+            new_height = (new_width * original_height) / original_width;
+        }
+
+        if (new_height > height) {
+            new_height = height;
+            new_width = (new_height * original_width) / original_height;
+        }
+
+        return image.getScaledInstance(new_width, new_height, Image.SCALE_DEFAULT);
+    }
 }

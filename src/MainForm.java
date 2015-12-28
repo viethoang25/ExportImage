@@ -51,7 +51,9 @@ public class MainForm extends JFrame {
                 if (!rootImage.file.exists()) {
                     JOptionPane.showConfirmDialog(MainForm.this, txtFile.getText() + " is not existed");
                 } else {
-                    imageLabel = new JLabel(new ImageIcon(rootImage.image));
+                    imagePanel.removeAll();
+                    imageLabel = new JLabel(new ImageIcon(rootImage.resizeImage(1000, 550)));
+                    imageLabel.setBounds(0, 0, 1000, 550);
                     imagePanel.add(imageLabel);
                     imageLabel.addMouseListener(MouseHandle.getInstance());
                     imageLabel.addMouseMotionListener(MouseHandle.getInstance());
