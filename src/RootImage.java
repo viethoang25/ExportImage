@@ -10,14 +10,20 @@ import java.io.IOException;
  */
 
 public class RootImage {
+    // Folder
     private static final String ROOT_IMAGE_FOLDER = "./image/";
     private static final String SUB_IMAGE_FOLDER = "./subImage/";
+    // Dinh dang du lieu vao ra
     final String INPUT_FILE = "PNG";
     final String OUTPUT_FILE = "PNG";
 
     BufferedImage subImage;
     BufferedImage image;
     File file;
+
+    // Ti le anh go so voi anh da scale
+    float heightRate;
+    float widthRate;
 
     public RootImage() {
     }
@@ -32,6 +38,8 @@ public class RootImage {
 
     // Doc file hinh anh va luu vao bien image
     private void readFile(String filename) {
+        heightRate = 1;
+        widthRate = 1;
         String director = ROOT_IMAGE_FOLDER + filename + "." + INPUT_FILE;
         file = new File(director);
         System.out.println(file);
@@ -48,6 +56,14 @@ public class RootImage {
         if (dy < 0) y = y + dy;
         int width = Math.abs(dx);
         int height = Math.abs(dy);
+
+        // Bien doi toa do dua vao ti le scale
+        x = (int) (x / widthRate);
+        y = (int) (y / heightRate);
+        width = (int) (width / widthRate);
+        height = (int) (height / heightRate);
+
+        System.out.println(widthRate + " " + heightRate);
         if (image != null) {
             subImage = image.getSubimage(x, y, width, height);
         }
@@ -61,7 +77,6 @@ public class RootImage {
         File checkFile = new File(director);
         while (index < 999 && checkFile.exists()) {
             index++;
-            System.out.println(index);
             stringIndex = getStringNumber(index);
             director = SUB_IMAGE_FOLDER + name + "/" + name + stringIndex + "." + OUTPUT_FILE;
             checkFile = new File(director);
@@ -105,6 +120,10 @@ public class RootImage {
             new_height = height;
             new_width = (new_height * original_width) / original_height;
         }
+
+        // Dinh gia tri cho rate
+        heightRate = (float) new_height / original_height;
+        widthRate = (float) new_width / original_width;
 
         return image.getScaledInstance(new_width, new_height, Image.SCALE_DEFAULT);
     }
