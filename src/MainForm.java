@@ -1,9 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -21,7 +18,8 @@ public class MainForm extends JFrame {
     private JPanel applyPanel;
     private JLabel imageLabel;
 
-    private RootImage rootImage;
+    public RootImage rootImage;
+    Rectangle captureRect;
 
     public MainForm() {
         super("Hello Form");
@@ -38,7 +36,11 @@ public class MainForm extends JFrame {
                 } else {
                     JOptionPane.showConfirmDialog(MainForm.this, txtName.getText() + " is created");
                     MouseHandle mouse = MouseHandle.getInstance();
-                    rootImage.createSubImage(mouse.getX(), mouse.getY(), mouse.getDx(), mouse.getDy());
+                    // Cat hinh vuong
+                    rootImage.createSubImage(mouse.getRectX(), mouse.getRectY(), mouse.getEdge(), mouse.getEdge());
+
+                    // Cat hinh chu nhat
+                    // rootImage.createSubImage(mouse.getX(), mouse.getY(), mouse.getDx(), mouse.getDy());
                     rootImage.saveSubImage(txtName.getText().toString());
                 }
             }
@@ -51,12 +53,33 @@ public class MainForm extends JFrame {
                 if (!rootImage.file.exists()) {
                     JOptionPane.showConfirmDialog(MainForm.this, txtFile.getText() + " is not existed");
                 } else {
+                    BufferedImage screen = rootImage.resizeImage(1000, 550);
+                    BufferedImage screenCopy = new BufferedImage(
+                            screen.getWidth(),
+                            screen.getHeight(),
+                            screen.getType());
                     imagePanel.removeAll();
-                    imageLabel = new JLabel(new ImageIcon(rootImage.resizeImage(1000, 550)));
+                    imageLabel = new JLabel(new ImageIcon(screenCopy));
+                    //imageLabel = new JLabel(new ImageIcon(rootImage.resizeImage(1000, 550)));
                     imageLabel.setBounds(0, 0, 1000, 550);
                     imagePanel.add(imageLabel);
+                    repaint(screen, screenCopy);
+                    imageLabel.repaint();
                     imageLabel.addMouseListener(MouseHandle.getInstance());
                     imageLabel.addMouseMotionListener(MouseHandle.getInstance());
+                    imageLabel.addMouseMotionListener(new MouseMotionAdapter() {
+                        @Override
+                        public void mouseMoved(MouseEvent me) {
+                            repaint(screen, screenCopy);
+                            imageLabel.repaint();
+                        }
+
+                        @Override
+                        public void mouseDragged(MouseEvent me) {
+                            repaint(screen, screenCopy);
+                            imageLabel.repaint();
+                        }
+                    });
                     JOptionPane.showConfirmDialog(MainForm.this, txtFile.getText() + " is opened");
                     revalidate();
                     repaint();
@@ -101,5 +124,18 @@ public class MainForm extends JFrame {
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+    }
+
+    public void repaint(BufferedImage root, BufferedImage copy) {
+        Graphics2D g = copy.createGraphics();
+        g.drawImage(root, 0, 0, null);
+        Rectangle captureRect = MouseHandle.getInstance().getRectangle();
+        if (captureRect != null) {
+            g.setColor(Color.BLUE);
+            g.draw(captureRect);
+            g.setColor(new Color(0, 100, 255, 80));
+            g.fill(captureRect);
+        }
+        g.dispose();
     }
 }

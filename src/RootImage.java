@@ -10,6 +10,8 @@ import java.io.IOException;
  */
 
 public class RootImage {
+    // Size
+    private final int IMAGE_SIZE = 128;
     // Folder
     private static final String ROOT_IMAGE_FOLDER = "./image/";
     private static final String SUB_IMAGE_FOLDER = "./subImage/";
@@ -34,6 +36,10 @@ public class RootImage {
 
     public BufferedImage getSubImage() {
         return subImage;
+    }
+
+    public BufferedImage getImage() {
+        return image;
     }
 
     // Doc file hinh anh va luu vao bien image
@@ -84,7 +90,9 @@ public class RootImage {
         checkFile.getParentFile().mkdirs();
         try {
             checkFile.createNewFile();
-            ImageIO.write(subImage, OUTPUT_FILE, new FileOutputStream(director));
+            BufferedImage resizeSubImage;
+            resizeSubImage = toBufferedImage(subImage.getScaledInstance(IMAGE_SIZE, IMAGE_SIZE, Image.SCALE_DEFAULT));
+            ImageIO.write(resizeSubImage, OUTPUT_FILE, new FileOutputStream(director));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -105,7 +113,7 @@ public class RootImage {
         return number;
     }
 
-    public Image resizeImage(int width, int height) {
+    public BufferedImage resizeImage(int width, int height) {
         int original_width = image.getWidth();
         int original_height = image.getHeight();
         int new_width = original_width;
@@ -125,6 +133,22 @@ public class RootImage {
         heightRate = (float) new_height / original_height;
         widthRate = (float) new_width / original_width;
 
-        return image.getScaledInstance(new_width, new_height, Image.SCALE_DEFAULT);
+        return toBufferedImage(image.getScaledInstance(new_width, new_height, Image.SCALE_DEFAULT));
+    }
+
+    private BufferedImage toBufferedImage(Image img)
+    {
+        if (img instanceof BufferedImage)
+        {
+            return (BufferedImage) img;
+        }
+        // Tao mot buffered image trong
+        BufferedImage buffImage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        // Ve hinh vao trong buffered image vua tao
+        Graphics2D g = buffImage.createGraphics();
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
+        // Tra ve buffered image da ve
+        return buffImage;
     }
 }

@@ -6,6 +6,6 @@ public class HelloWorld {
     public static void main(String[] args) {
         MainForm form = new MainForm();
         form.showGui();
-        form.setSize(1000,700);
+        form.setSize(1100,700);
     }
 }
